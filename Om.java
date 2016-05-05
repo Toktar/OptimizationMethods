@@ -113,7 +113,7 @@ public class Om {
         return H;
     }
 
-    public static double getNorma(double[] vector) {
+    public static double getNorm(double[] vector) {
         double result = 0;
         for (int i = 0; i < vector.length; i++) {
             result += vector[i];
@@ -178,7 +178,7 @@ public class Om {
     public static double[] NewtonSearch(double[] u, double eps) {
         double[][] invertH = createHesseMatrix();
         invert(invertH);
-        while (getNorma(gradIinPoint(u)) > eps) {
+        while (getNorm(gradIinPoint(u)) > eps) {
             double [][] newU = sub(vectorToMatrix(u), mul(vectorToMatrix(gradIinPoint(u)), invertH));
             u = newU[0];
 
@@ -187,9 +187,10 @@ public class Om {
     }
 
     public static void main(String[] args) {
-        Newton();
-        Penalty();
+        //Newton();
+        //Penalty();
         steepestDescent();
+        stepFractination();
     }
 
     private static void Penalty() {
@@ -204,7 +205,7 @@ public class Om {
             u = NewtonSearch(u, eps);
             r = r/c;
         }
-        System.out.println("u = ("+u[0]+" , "+ u[1]+")");
+        System.out.println("u = (" + u[0] + " , " + u[1] + ")");
 
 
     }
@@ -225,11 +226,11 @@ public class Om {
     //По аналогии многомерную точку представляем в виде массива double
     //Точка u - начальное приближение
     private static void steepestDescent() {
-        double eps = 0;
+        double eps = 0.0001;
         double[] u = {0, 0};
-        getData(eps, u, 0);
+        //getData(eps, u, 0);
         double[] gradI0 = gradIinPoint(u);
-        while (getNorma(gradI0) >= eps) {
+        while (Math.abs(getNorm(gradI0)) >= eps) {
 
             // В методичке сказано только, что альфа > 0,
             // про правую границу - ничгео, так что b - случайное
@@ -240,7 +241,7 @@ public class Om {
             }
             gradI0 = gradIinPoint(u);
         }
-    
+
         System.out.println(String.format("u = (%s , %s)", u[0], u[1]));
         System.out.printf("I(u) = %s%n", I(u));
     }
@@ -280,4 +281,38 @@ public class Om {
         return I(u);
     }
 
+
+    private static void stepFractination() {
+        double eps = 0.0001;
+        double[] u = {-5.3, 12.2};
+        double alpha = eps;
+
+        double[] gradI0 = gradIinPoint(u);
+        double I = I(u);
+        int j = 0;
+        while (Math.abs(getNorm(gradI0)) >= eps) {
+            ++j;
+            double[] u1 = new double[u.length];
+            for (int i = 0; i < u.length; i++) {
+                u1[i] = u[i] - alpha * gradI0[i];
+            }
+
+            double I1 = I(u1);
+            if (I1 < I) {
+                u = u1;
+                I = I1;
+            } else {
+                alpha /= 2;
+            }
+
+            if (j > 3) {
+                alpha *= 3;
+                j = 0;
+            }
+            gradI0 = gradIinPoint(u);
+        }
+
+        System.out.println(String.format("u = (%s , %s)", u[0], u[1]));
+        System.out.printf("I(u) = %s%n", I);
+    }
 }
