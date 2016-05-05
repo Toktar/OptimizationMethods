@@ -1,4 +1,4 @@
-import java.util.Scanner;
+﻿import java.util.Scanner;
 
 /**
  * Created by Kida on 24.03.2016.
@@ -189,7 +189,7 @@ public class Om {
     public static void main(String[] args) {
         Newton();
         Penalty();
-
+        steepestDescent();
     }
 
     private static void Penalty() {
@@ -220,5 +220,64 @@ public class Om {
         u = u1;
     }
 
+
+    //TODO: Проверить бы это ещё
+    //По аналогии многомерную точку представляем в виде массива double
+    //Точка u - начальное приближение
+    private static void steepestDescent() {
+        double eps = 0;
+        double[] u = {0, 0};
+        getData(eps, u, 0);
+        double[] gradI0 = gradIinPoint(u);
+        while (getNorma(gradI0) >= eps) {
+
+            // В методичке сказано только, что альфа > 0,
+            // про правую границу - ничгео, так что b - случайное
+            double b = 10;
+            double alpha = dichotomy(0, b, u, eps);
+            for (int i = 0; i < u.length; i++) {
+                u[i] -= alpha * gradI0[i];
+            }
+            gradI0 = gradIinPoint(u);
+        }
+    
+        System.out.println(String.format("u = (%s , %s)", u[0], u[1]));
+        System.out.printf("I(u) = %s%n", I(u));
+    }
+
+    private static double dichotomy(double a, double b, double[] u, double e) {
+        double del = e / 10;
+        int n = 0;
+        double x1, x2;
+        do {
+            n++;
+            x1 = (b + a - del) / 2;
+            x2 = (b + a + del) / 2;
+            double i1 = f(x1, u);
+            double i2 = f(x2, u);
+            if (i1 < i2) {
+                b = x2;
+            } else if (i1 > i2) {
+                a = x1;
+            } else {
+                a = x1;
+                b = x2;
+            }
+        } while (Math.abs(b - a) >= e);
+
+        return (b + a) / 2;
+    }
+
+    // Вспомогательная функция для выбора направления спуска методом дихотомии
+    private static double f(double alpha, double[] u0) {
+        double[] gradI0 = gradIinPoint(u0);
+
+        double[] u = new double[2];
+        for (int i = 0; i < u.length; i++) {
+            u[i] = u0[i] - alpha * gradI0[0];
+        }
+
+        return I(u);
+    }
 
 }
