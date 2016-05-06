@@ -1,4 +1,4 @@
-﻿package Om;
+package Om;
 
 import java.util.Scanner;
 
@@ -6,23 +6,23 @@ import java.util.Scanner;
  * Created by Kida on 05.05.2016.
  */
 public class Main {
+    static double eps = 0, r = 1;
+    static double [] u = {0,0};
     public static void main(String[] args) {
-        double eps = 0.01, r = 1;
-        double c = 5;
-        double [] u = {-1, 1};
-        getData(eps, u, r);
-
-        double[] uMin;
-        Newton.search(u, eps);
+        Scanner in = new Scanner(System.in);
+        System.out.println("Введите eps");
+        eps = in.nextDouble();
+        System.out.println("Введите r");
+        r = in.nextDouble();
+        System.out.println("Введите стартовую точку u0:");
+        double[] u1 = {in.nextDouble(), in.nextDouble()};
+        u = u1;
+        //getData(eps, u, r);
+        System.out.println(Double.toString(eps) + Double.toString(u[0])+Double.toString(u[1]) + Double.toString(r));
         show("Метод Ньютона:", Newton.search(u, eps), Newton.I(u));
         show("Метод штрафных функций:", Penalty.search(u, eps, r), Penalty.I(u));
-
-        uMin = GradientDescent.findByStepFractionation(u, eps);
-        show("Метод деления отрезка:", uMin, GradientDescent.I(uMin));
-
-        uMin = GradientDescent.findBySteepestDescent(u, eps);
-        show("Метод наискорейшего спуска:", uMin, GradientDescent.I(uMin));
-
+        show("Метод наискорейшего спуска:", SteepestDescent.search(u, eps), SteepestDescent.I(u));
+        show("Метод деления отрезка:", StepFractination.search(u, eps), StepFractination.I(u));
 
     }
 
