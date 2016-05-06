@@ -1,4 +1,3 @@
-package Om;
 import java.util.Scanner;
 class MyNewton extends Newton {
     public static double r=1;

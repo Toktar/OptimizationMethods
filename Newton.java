@@ -1,5 +1,3 @@
-package Om;
-
 import java.util.Scanner;
 
 public class Newton {
