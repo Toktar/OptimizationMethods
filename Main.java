@@ -1,4 +1,4 @@
-package Om;
+﻿package Om;
 
 import java.util.Scanner;
 
@@ -7,16 +7,22 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
-        double eps = 0, r = 1;
+        double eps = 0.01, r = 1;
         double c = 5;
-        double [] u = {0,0};
+        double [] u = {-1, 1};
         getData(eps, u, r);
 
+        double[] uMin;
         Newton.search(u, eps);
         show("Метод Ньютона:", Newton.search(u, eps), Newton.I(u));
         show("Метод штрафных функций:", Penalty.search(u, eps, r), Penalty.I(u));
-        show("Метод наискорейшего спуска:", SteepestDescent.search(u, eps), SteepestDescent.I(u));
-        show("Метод деления отрезка:", Newton.search(u, eps), Newton.I(u));
+
+        uMin = GradientDescent.findByStepFractionation(u, eps);
+        show("Метод деления отрезка:", uMin, GradientDescent.I(uMin));
+
+        uMin = GradientDescent.findBySteepestDescent(u, eps);
+        show("Метод наискорейшего спуска:", uMin, GradientDescent.I(uMin));
+
 
     }
 
