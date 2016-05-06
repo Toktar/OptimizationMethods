@@ -1,5 +1,3 @@
-﻿package Om;
-
 class GradientDescent {
 
     static double I(double[] u) {
@@ -13,27 +11,9 @@ class GradientDescent {
     private static double getNorm(double[] vector) {
         double result = 0;
         for (double aVector : vector) {
-            result += aVector;
+            result += aVector * aVector;
         }
-        return result;
-    }
-
-    //По аналогии многомерную точку представляем в виде массива double
-    //Точка u - начальное приближение
-    static double[] findBySteepestDescent(double[] u, double eps) {
-        double[] gradI0 = gradIinPoint(u);
-        while (Math.abs(getNorm(gradI0)) >= eps) {
-            // В методичке сказано только, что альфа > 0,
-            // про правую границу - ничгео, так что b - случайное
-            double b = 10;
-            double alpha = dichotomy(0, b, u, eps);
-            for (int i = 0; i < u.length; i++) {
-                u[i] -= alpha * gradI0[i];
-            }
-            gradI0 = gradIinPoint(u);
-        }
-
-        return u;
+        return Math.sqrt(result);
     }
 
     private static double dichotomy(double a, double b, double[] u, double e) {
@@ -61,7 +41,7 @@ class GradientDescent {
     private static double f(double alpha, double[] u0) {
         double[] gradI0 = gradIinPoint(u0);
 
-        double[] u = new double[2];
+        double[] u = new double[u0.length];
         for (int i = 0; i < u.length; i++) {
             u[i] = u0[i] - alpha * gradI0[0];
         }
@@ -69,6 +49,24 @@ class GradientDescent {
         return I(u);
     }
 
+
+    //По аналогии многомерную точку представляем в виде массива double
+    //Точка u - начальное приближение
+    static double[] findBySteepestDescent(double[] u, double eps) {
+        double[] gradI0 = gradIinPoint(u);
+        while (Math.abs(getNorm(gradI0)) >= eps) {
+            // В методичке сказано только, что альфа > 0,
+            // про правую границу - ничгео, так что b - случайное
+            double b = 10;
+            double alpha = dichotomy(0, b, u, eps);
+            for (int i = 0; i < u.length; i++) {
+                u[i] -= alpha * gradI0[i];
+            }
+            gradI0 = gradIinPoint(u);
+        }
+
+        return u;
+    }
 
     static double[] findByStepFractionation(double[] u, double eps) {
         double alpha = eps / 5;
@@ -92,7 +90,7 @@ class GradientDescent {
             }
 
             if (j > 3) {
-                //alpha *= 3;
+                alpha *= 3;
                 j = 0;
             }
             gradI0 = gradIinPoint(u);
